@@ -19,6 +19,7 @@ namespace EventManager.WebAPI.Controllers
         public EventManagerController(ILogger<EventManagerController> logger)
         {
             this._logger = logger;
+
             this.Jobs = new List<EventJob>();
             
             // Add some fake data
@@ -39,18 +40,23 @@ namespace EventManager.WebAPI.Controllers
         [HttpGet]
         public IEnumerable<EventJob> Get()
         {
+            _logger.LogInformation($"'{nameof(Get)}' has been invoked.");
             return this.Jobs;
         }
 
         [HttpGet("byId/{id}", Name = "GetById")]
         public async Task<EventJob> GetById(int id)
         {
+            _logger.LogInformation($"'{nameof(GetById)}' has been invoked with id '{id}'.");
+
             return this.Jobs.FirstOrDefault(x => x.Id == id);
         }
         
         [HttpPost("AddJob", Name = "AddJob")]
         public EventJob AddJob([FromBody] int[] data)
         {
+            _logger.LogInformation($"'{nameof(AddJob)}' has been invoked.");
+
             var job = new EventJob
             {
                 Id = this.Jobs.Any() ? this.Jobs.Max(x => x.Id) + 1 : 1,
