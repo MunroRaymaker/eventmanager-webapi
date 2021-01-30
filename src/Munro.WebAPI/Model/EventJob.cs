@@ -1,10 +1,14 @@
 using System;
 
-namespace EventManager.WebAPI
+namespace EventManager.WebAPI.Model
 {
     public class EventJob
     {
         public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string UserName { get; set; }
 
         public int[] Data { get; set; }
 

@@ -1,3 +1,7 @@
+using EventManager.WebAPI.Model;
+using EventManager.WebAPI.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,12 +23,13 @@ namespace EventManager.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "eventmanager_webapi", Version = "v1" });
             });
+            services.AddMvc().AddFluentValidation();
+            services.AddTransient<IValidator<EventJobRequest>, EventJobRequestValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

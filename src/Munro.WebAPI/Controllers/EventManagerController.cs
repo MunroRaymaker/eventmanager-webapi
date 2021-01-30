@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EventManager.WebAPI.Model;
 
 namespace EventManager.WebAPI.Controllers
 {
@@ -71,20 +72,22 @@ namespace EventManager.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("AddJob", Name = "AddJob")]
-        public ActionResult<EventJob> AddJob([FromBody] int[] data)
+        public ActionResult<EventJob> AddJob([FromBody] EventJobRequest request)
         {
             this.logger.LogInformation($"'{nameof(AddJob)}' has been invoked.");
 
-            if (!data.Any())
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var job = new EventJob
             {
                 Id = this.jobs.Any() ? this.jobs.Max(x => x.Id) + 1 : 1,
                 TimeStamp = DateTime.Now,
-                Data = data,
+                Data = request.Data,
+                Name = request.Name,
+                UserName = request.UserName,
                 IsCompleted = false,
                 Duration = TimeSpan.Zero,
                 Status = "Pending"
