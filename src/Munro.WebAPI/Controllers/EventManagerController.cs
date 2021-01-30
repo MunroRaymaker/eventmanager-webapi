@@ -33,7 +33,7 @@ namespace EventManager.WebAPI.Controllers
                     IsCompleted = false,
                     Status = "Pending",
                     TimeStamp = DateTime.UtcNow,
-                    Duration = TimeSpan.Zero,
+                    Duration = 0,
                     Data = Enumerable.Range(1,10).Shuffle().ToArray()
                 });
             }
@@ -89,7 +89,7 @@ namespace EventManager.WebAPI.Controllers
                 Name = request.Name,
                 UserName = request.UserName,
                 IsCompleted = false,
-                Duration = TimeSpan.Zero,
+                Duration = 0,
                 Status = "Pending"
             };
 

@@ -14,7 +14,7 @@ namespace EventManager.WebAPI.Model
 
         public DateTime TimeStamp { get; set; }
 
-        public TimeSpan Duration { get; set; }
+        public long Duration { get; set; }
         
         public bool IsCompleted { get; set; }
 
