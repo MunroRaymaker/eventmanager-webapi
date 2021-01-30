@@ -1,4 +1,5 @@
 using EventManager.WebAPI.Model;
+using EventManager.WebAPI.Services;
 using EventManager.WebAPI.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -30,6 +31,7 @@ namespace EventManager.WebAPI
             });
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<EventJobRequest>, EventJobRequestValidator>();
+            services.AddTransient<IProcessingService, ProcessingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

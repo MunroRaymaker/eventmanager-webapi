@@ -1,4 +1,5 @@
-﻿using EventManager.WebAPI.Extensions;
+﻿using EventManager.WebAPI.Model;
+using EventManager.WebAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -6,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EventManager.WebAPI.Model;
 
 namespace EventManager.WebAPI.Controllers
 {
@@ -15,28 +15,12 @@ namespace EventManager.WebAPI.Controllers
     public class EventManagerController : ControllerBase
     {
         private readonly ILogger<EventManagerController> logger;
-
-        private readonly List<EventJob> jobs;
+        private readonly IProcessingService processingService;
         
-        public EventManagerController(ILogger<EventManagerController> logger)
+        public EventManagerController(ILogger<EventManagerController> logger, IProcessingService processingService)
         {
             this.logger = logger;
-
-            this.jobs = new List<EventJob>();
-            
-            // Add some fake data
-            for (int i = 0; i < 100; i++)
-            {
-                this.jobs.Add(new EventJob
-                {
-                    Id = i,
-                    IsCompleted = false,
-                    Status = "Pending",
-                    TimeStamp = DateTime.UtcNow,
-                    Duration = 0,
-                    Data = Enumerable.Range(1,10).Shuffle().ToArray()
-                });
-            }
+            this.processingService = processingService;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -46,12 +30,12 @@ namespace EventManager.WebAPI.Controllers
         {
             this.logger.LogInformation($"'{nameof(Get)}' has been invoked.");
 
-            if (!this.jobs.Any())
+            if (!ProcessingService.Jobs.Any())
             {
                 return NoContent();
             }
 
-            return this.jobs;
+            return ProcessingService.Jobs;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -61,7 +45,7 @@ namespace EventManager.WebAPI.Controllers
         {
             this.logger.LogInformation($"'{nameof(GetById)}' has been invoked with id '{id}'.");
 
-            var job = this.jobs.FirstOrDefault(x => x.Id == id);
+            var job = ProcessingService.Jobs.FirstOrDefault(x => x.Id == id);
 
             if (job == null) return NoContent();
 
@@ -83,7 +67,7 @@ namespace EventManager.WebAPI.Controllers
 
             var job = new EventJob
             {
-                Id = this.jobs.Any() ? this.jobs.Max(x => x.Id) + 1 : 1,
+                Id = ProcessingService.Jobs.Any() ? ProcessingService.Jobs.Max(x => x.Id) + 1 : 1,
                 TimeStamp = DateTime.Now,
                 Data = request.Data,
                 Name = request.Name,
@@ -93,7 +77,7 @@ namespace EventManager.WebAPI.Controllers
                 Status = "Pending"
             };
 
-            this.jobs.Add(job);
+            ProcessingService.Jobs.Enqueue(job);
 
             return job;
         }
