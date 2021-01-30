@@ -1,10 +1,11 @@
-﻿using System;
+﻿using EventManager.WebAPI.Extensions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EventManager.WebAPI.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace EventManager.WebAPI.Controllers
 {
@@ -12,20 +13,20 @@ namespace EventManager.WebAPI.Controllers
     [Route("[controller]")]
     public class EventManagerController : ControllerBase
     {
-        private readonly ILogger<EventManagerController> _logger;
+        private readonly ILogger<EventManagerController> logger;
 
-        private readonly List<EventJob> Jobs;
+        private readonly List<EventJob> jobs;
         
         public EventManagerController(ILogger<EventManagerController> logger)
         {
-            this._logger = logger;
+            this.logger = logger;
 
-            this.Jobs = new List<EventJob>();
+            this.jobs = new List<EventJob>();
             
             // Add some fake data
             for (int i = 0; i < 100; i++)
             {
-                this.Jobs.Add(new EventJob
+                this.jobs.Add(new EventJob
                 {
                     Id = i,
                     IsCompleted = false,
@@ -37,29 +38,51 @@ namespace EventManager.WebAPI.Controllers
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpGet]
-        public IEnumerable<EventJob> Get()
+        public ActionResult<IEnumerable<EventJob>> Get()
         {
-            _logger.LogInformation($"'{nameof(Get)}' has been invoked.");
-            return this.Jobs;
+            this.logger.LogInformation($"'{nameof(Get)}' has been invoked.");
+
+            if (!this.jobs.Any())
+            {
+                return NoContent();
+            }
+
+            return this.jobs;
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpGet("byId/{id}", Name = "GetById")]
-        public async Task<EventJob> GetById(int id)
+        public async Task<ActionResult<EventJob>> GetById(int id)
         {
-            _logger.LogInformation($"'{nameof(GetById)}' has been invoked with id '{id}'.");
+            this.logger.LogInformation($"'{nameof(GetById)}' has been invoked with id '{id}'.");
 
-            return this.Jobs.FirstOrDefault(x => x.Id == id);
+            var job = this.jobs.FirstOrDefault(x => x.Id == id);
+
+            if (job == null) return NoContent();
+
+            return job;
         }
-        
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("AddJob", Name = "AddJob")]
-        public EventJob AddJob([FromBody] int[] data)
+        public ActionResult<EventJob> AddJob([FromBody] int[] data)
         {
-            _logger.LogInformation($"'{nameof(AddJob)}' has been invoked.");
+            this.logger.LogInformation($"'{nameof(AddJob)}' has been invoked.");
+
+            if (!data.Any())
+            {
+                return BadRequest();
+            }
 
             var job = new EventJob
             {
-                Id = this.Jobs.Any() ? this.Jobs.Max(x => x.Id) + 1 : 1,
+                Id = this.jobs.Any() ? this.jobs.Max(x => x.Id) + 1 : 1,
                 TimeStamp = DateTime.Now,
                 Data = data,
                 IsCompleted = false,
@@ -67,7 +90,7 @@ namespace EventManager.WebAPI.Controllers
                 Status = "Pending"
             };
 
-            this.Jobs.Add(job);
+            this.jobs.Add(job);
 
             return job;
         }
