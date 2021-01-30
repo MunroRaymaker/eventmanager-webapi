@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EventManager.WebAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -30,7 +31,7 @@ namespace EventManager.WebAPI.Controllers
                     Status = "Pending",
                     TimeStamp = DateTime.UtcNow,
                     Duration = TimeSpan.Zero,
-                    Data = Enumerable.Range(1,100).ToArray()
+                    Data = Enumerable.Range(1,10).Shuffle().ToArray()
                 });
             }
         }
