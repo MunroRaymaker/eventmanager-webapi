@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace EventManager.WebAPI.Extensions
 {
@@ -23,7 +22,7 @@ namespace EventManager.WebAPI.Extensions
                 array[newIndex] = tmp;
             }
 
-            return array;
+            return array.ToArray();
         }
     }
 }
