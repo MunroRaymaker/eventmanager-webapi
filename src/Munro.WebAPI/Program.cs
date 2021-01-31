@@ -1,4 +1,6 @@
+using EventManager.WebAPI.Services;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
@@ -15,7 +17,13 @@ namespace EventManager.WebAPI
             try
             {
                 logger.Debug("Initialized Main");
-                CreateHostBuilder(args).Build().Run();
+                var host = CreateHostBuilder(args).Build();
+
+                // Start the background process to listen for queued work items
+                var backgroundProcessingServiceService = host.Services.GetRequiredService<ProcessingService>();
+                backgroundProcessingServiceService.StartProcessing();
+
+                host.Run();
             }
             catch (System.Exception ex)
             {
@@ -43,6 +51,11 @@ namespace EventManager.WebAPI
                             logging.SetMinimumLevel(LogLevel.Trace);
                         })
                         .UseNLog();
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    // Need to register the service early in the pipeline to allow for service startup
+                    services.AddSingleton<ProcessingService>();
                 });
     }
 }

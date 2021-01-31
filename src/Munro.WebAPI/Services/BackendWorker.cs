@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace EventManager.WebAPI.Services
 {
-    public class BackendWorker
+    public class LongTasks
     {
-        public static async Task<int[]> Sort(int[] array)
+        public static int[] Sort(int[] array)
         {
-            // Logic here
-            await Task.Delay(1000);
+            // Simulate long running task
+            Thread.Sleep(10000);
             Array.Sort(array);
             return array;
         }
