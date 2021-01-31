@@ -27,7 +27,7 @@ namespace EventManager.WebAPI
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "eventmanager_webapi", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "EventManager WebAPI", Version = "v1" });
             });
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<EventJobRequest>, EventJobRequestValidator>();
