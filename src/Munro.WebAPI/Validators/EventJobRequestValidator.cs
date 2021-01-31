@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EventManager.WebAPI.Model;
+﻿using EventManager.WebAPI.Model;
 using FluentValidation;
 
 namespace EventManager.WebAPI.Validators
