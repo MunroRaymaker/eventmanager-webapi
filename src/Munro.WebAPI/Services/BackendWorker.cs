@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 namespace EventManager.WebAPI.Services
 {
@@ -7,8 +6,6 @@ namespace EventManager.WebAPI.Services
     {
         public static int[] Sort(int[] array)
         {
-            // Simulate long running task
-            Thread.Sleep(10000);
             Array.Sort(array);
             return array;
         }
