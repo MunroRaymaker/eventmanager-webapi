@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EventManager.WebAPI.Model;
 using EventManager.WebAPI.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EventManager.WebAPI.Controllers
 {
@@ -16,18 +16,13 @@ namespace EventManager.WebAPI.Controllers
     public class EventManagerController : ControllerBase
     {
         private readonly ILogger<EventManagerController> logger;
-        private readonly IRepository repository;
-        private readonly IBackgroundTaskQueue taskQueue;
         private readonly IMapper mapper;
+        private readonly JobContext db = new JobContext();
 
         public EventManagerController(ILogger<EventManagerController> logger,
-            IBackgroundTaskQueue taskQueue,
-            IRepository repository, 
             IMapper mapper)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            this.taskQueue = taskQueue ?? throw new ArgumentNullException(nameof(taskQueue));
-            this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
             this.mapper = mapper;
         }
 
@@ -38,19 +33,19 @@ namespace EventManager.WebAPI.Controllers
         {
             this.logger.LogInformation($"'{nameof(Get)}' has been invoked.");
 
-            if (!this.repository.GetJobs().Any()) return NoContent();
+            if (!this.db.Jobs.Any()) return NoContent();
 
-            return this.repository.GetJobs().ToArray();
+            return this.db.Jobs.ToArray();
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpGet("byId/{id}", Name = "GetById")]
-        public async Task<ActionResult<EventJob>> GetById(int id)
+        public ActionResult<EventJob> GetById(int id)
         {
             this.logger.LogInformation($"'{nameof(GetById)}' has been invoked with id '{id}'.");
 
-            var job = this.repository.GetJob(id);
+            var job = this.db.Jobs.Find(id);
 
             if (job == null) return NoContent();
 
@@ -68,31 +63,28 @@ namespace EventManager.WebAPI.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             // Save item to storage
-            var id = this.repository.Upsert(this.mapper.Map<EventJob>(request));
+            var job = this.mapper.Map<EventJob>(request);
+            job.TimeStamp = DateTime.UtcNow;
+            this.db.Jobs.Add(job);
+            this.db.SaveChanges();
 
-            this.taskQueue.QueueBackgroundWorkItem(async token =>
-            {
-                this.logger.LogInformation("Queued background task with id {Id} started ", id);
+            var id = job.Id;
 
-                // get work item from storage
-                var job = this.repository.GetJob(id);
-
-                // sort data
-                job.Data = Worker.Sort(job.Data);
-
-                // Add some delay
-                await Task.Delay(TimeSpan.FromSeconds(2), token);
-
-                job.Complete();
-
-                this.logger.LogInformation("Queued background task with id {Id} completed in {Duration} ticks", id,
-                    job.Duration);
-
-                // save data
-                this.repository.Upsert(job);
-            });
+            BackgroundJob.Enqueue(() => DoWork(id));
 
             return id;
+        }
+
+        // Must be static or Hangfire will fail
+        public static void DoWork(int id)
+        {
+            using var db = new JobContext();
+            var job = db.Jobs.Find(id);
+            if (job == null) return;
+            job.Data = Worker.Sort(job.Data);
+            job.Complete();
+            db.Jobs.Update(job);
+            db.SaveChanges();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace EventManager.WebAPI.Model
     {
         private readonly ILogger<Repository> logger;
 
-        private static IList<EventJob> EventJobs { get; } = new List<EventJob>();
+        private readonly JobContext db = new JobContext();
 
         public Repository(ILogger<Repository> logger)
         {
@@ -23,14 +23,17 @@ namespace EventManager.WebAPI.Model
         {
             try
             {
-                var item = GetJob(job.Id);
+                var item = this.db.Jobs.Find(job.Id);
 
                 // New job
                 if (item == null)
                 {
-                    job.Id = GetJobs().Any() ? GetJobs().Max(x => x.Id) + 1 : 1;
+                    //job.Id = GetJobs().Any() ? GetJobs().Max(x => x.Id) + 1 : 1;
                     job.TimeStamp = DateTime.UtcNow;
-                    EventJobs.Add(job);
+
+                    this.db.Jobs.Add(job);
+                    this.db.SaveChanges();
+
                     return job.Id;
                 }
 
@@ -38,6 +41,9 @@ namespace EventManager.WebAPI.Model
                 item.Data = job.Data;
                 item.Name = job.Name;
                 item.UserName = job.UserName;
+
+                this.db.Jobs.Update(item);
+                this.db.SaveChanges();
 
                 return item.Id;
             }
@@ -50,12 +56,12 @@ namespace EventManager.WebAPI.Model
 
         public IEnumerable<EventJob> GetJobs()
         {
-            return EventJobs;
+            return this.db.Jobs.ToArray();
         }
 
         public EventJob GetJob(int id)
         {
-            return EventJobs.SingleOrDefault(x => x.Id == id);
+            return this.db.Jobs.Find(id);
         }
     }
 }
