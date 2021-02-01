@@ -87,7 +87,7 @@ Get-Content -Path .\scheduler-api-all-2021-02-01.log -Wait
 If running under IISExpress in development, you can also see the queue service is shut down properly if you shut down the webapi.
 
 An example of the console output can be seen here.
-![EventManager console output](https://imgur.com/dNNJuOx)
+![EventManager console output](https://i.imgur.com/dNNJuOx.png)
 
 
 The methods exposed are:
