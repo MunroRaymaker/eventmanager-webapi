@@ -1,13 +1,13 @@
-﻿using EventManager.WebAPI.Model;
-using EventManager.WebAPI.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EventManager.WebAPI.Mapping;
+using EventManager.WebAPI.Model;
+using EventManager.WebAPI.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace EventManager.WebAPI.Controllers
 {
@@ -16,8 +16,8 @@ namespace EventManager.WebAPI.Controllers
     public class EventManagerController : ControllerBase
     {
         private readonly ILogger<EventManagerController> logger;
-        private readonly IBackgroundTaskQueue taskQueue;
         private readonly IRepository repository;
+        private readonly IBackgroundTaskQueue taskQueue;
 
         public EventManagerController(ILogger<EventManagerController> logger,
             IBackgroundTaskQueue taskQueue,
@@ -35,10 +35,7 @@ namespace EventManager.WebAPI.Controllers
         {
             this.logger.LogInformation($"'{nameof(Get)}' has been invoked.");
 
-            if (!this.repository.GetJobs().Any())
-            {
-                return NoContent();
-            }
+            if (!this.repository.GetJobs().Any()) return NoContent();
 
             return this.repository.GetJobs().ToArray();
         }
@@ -65,31 +62,29 @@ namespace EventManager.WebAPI.Controllers
         {
             this.logger.LogInformation($"'{nameof(AddJob)}' has been invoked.");
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             // Save item to storage
-            int id = this.repository.Upsert(Mapper.Map(request));
-            
-            this.taskQueue.QueueBackgroundWorkItem(async token => {
+            var id = this.repository.Upsert(Mapper.Map(request));
 
+            this.taskQueue.QueueBackgroundWorkItem(async token =>
+            {
                 this.logger.LogInformation("Queued background task with id {Id} started ", id);
-                
+
                 // get work item from storage
                 var job = this.repository.GetJob(id);
 
                 // sort data
-                job.Data = LongTasks.Sort(job.Data);
+                job.Data = Worker.Sort(job.Data);
                 job.Complete();
 
-                this.logger.LogInformation("Queued background task with id {Id} completed in {Duration} ticks", id, job.Duration);
+                this.logger.LogInformation("Queued background task with id {Id} completed in {Duration} ticks", id,
+                    job.Duration);
 
                 // save data
                 this.repository.Upsert(job);
             });
-            
+
             return id;
         }
     }

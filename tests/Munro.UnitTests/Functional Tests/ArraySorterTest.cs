@@ -13,7 +13,7 @@ namespace Munro.UnitTests.Functional_Tests
         public void when_sorting_array_should_be_in_sorted_order(int[] input)
         {
             // Act
-            var actual = LongTasks.Sort(input);
+            var actual = Worker.Sort(input);
 
             // Assert
             actual.Should().BeInAscendingOrder("Because it was sorted");
