@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EventManager.WebAPI.Mapping;
 
 namespace EventManager.WebAPI.Controllers
 {
@@ -15,12 +16,16 @@ namespace EventManager.WebAPI.Controllers
     public class EventManagerController : ControllerBase
     {
         private readonly ILogger<EventManagerController> logger;
-        private readonly IProcessingService processingService;
-        
-        public EventManagerController(ILogger<EventManagerController> logger, IProcessingService processingService)
+        private readonly IBackgroundTaskQueue taskQueue;
+        private readonly IRepository repository;
+
+        public EventManagerController(ILogger<EventManagerController> logger,
+            IBackgroundTaskQueue taskQueue,
+            IRepository repository)
         {
-            this.logger = logger;
-            this.processingService = processingService;
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.taskQueue = taskQueue ?? throw new ArgumentNullException(nameof(taskQueue));
+            this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -30,12 +35,12 @@ namespace EventManager.WebAPI.Controllers
         {
             this.logger.LogInformation($"'{nameof(Get)}' has been invoked.");
 
-            if (!ProcessingService.Jobs.Any())
+            if (!this.repository.GetJobs().Any())
             {
                 return NoContent();
             }
 
-            return ProcessingService.Jobs;
+            return this.repository.GetJobs().ToArray();
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -45,7 +50,7 @@ namespace EventManager.WebAPI.Controllers
         {
             this.logger.LogInformation($"'{nameof(GetById)}' has been invoked with id '{id}'.");
 
-            var job = ProcessingService.Jobs.FirstOrDefault(x => x.Id == id);
+            var job = this.repository.GetJob(id);
 
             if (job == null) return NoContent();
 
@@ -56,7 +61,7 @@ namespace EventManager.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("AddJob", Name = "AddJob")]
-        public ActionResult<EventJob> AddJob([FromBody] EventJobRequest request)
+        public ActionResult<int> AddJob([FromBody] EventJobRequest request)
         {
             this.logger.LogInformation($"'{nameof(AddJob)}' has been invoked.");
 
@@ -65,21 +70,25 @@ namespace EventManager.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var job = new EventJob
-            {
-                Id = ProcessingService.Jobs.Any() ? ProcessingService.Jobs.Max(x => x.Id) + 1 : 1,
-                TimeStamp = DateTime.Now,
-                Data = request.Data,
-                Name = request.Name,
-                UserName = request.UserName,
-                IsCompleted = false,
-                Duration = 0,
-                Status = "Pending"
-            };
+            // Save item to storage
+            int id = this.repository.Upsert(Mapper.Map(request));
+            
+            this.taskQueue.QueueBackgroundWorkItem(async token => {
 
-            ProcessingService.Jobs.Enqueue(job);
+                this.logger.LogInformation("Queued background task {Id} started ", id);
+                
+                // get work item from storage
+                var job = this.repository.GetJob(id);
 
-            return job;
+                // sort data
+                job.Data = LongTasks.Sort(job.Data);
+                job.Complete();
+
+                // save data
+                this.repository.Upsert(job);
+            });
+            
+            return id;
         }
     }
 }

@@ -15,7 +15,6 @@ namespace Munro.UnitTests.Functional_Tests
                 Id = id,
                 Name = name,
                 UserName = user,
-                Status = status,
                 Data = data
             };
 

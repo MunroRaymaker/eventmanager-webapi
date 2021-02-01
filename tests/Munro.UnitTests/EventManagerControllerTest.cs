@@ -16,20 +16,16 @@ namespace Munro.UnitTests
         [Fact]
         public void when_getting_all_jobs_should_return_jobs()
         {
-            var logger = Mock.Of<ILogger<EventManagerController>>();
-            var processingService = Mock.Of<IProcessingService>();
-
             // Arrange
-            foreach (var job in TestData)
-            {
-                ProcessingService.Jobs.Enqueue(job);
-            }
-
-            var controller = new EventManagerController(logger, processingService);
+            var logger = Mock.Of<ILogger<EventManagerController>>();
+            var btq = Mock.Of<IBackgroundTaskQueue>();
+            var repo = new Mock<IRepository>(); 
+            repo.Setup(x => x.GetJobs()).Returns(TestData);
+            var controller = new EventManagerController(logger, btq, repo.Object);
 
             // Act
             var response = controller.Get();
-            
+
             // Assert
             EventJob[] jobs = response.Value.ToArray();
             jobs.Should().BeOfType<EventJob[]>();
@@ -44,17 +40,17 @@ namespace Munro.UnitTests
             {
                 yield return new EventJob
                 {
-                    Id = 1, Name = "Johnny", UserName = "JRN", TimeStamp = DateTime.Now, Status = "Pending",
+                    Id = 1, Name = "Johnny", UserName = "JRN", TimeStamp = DateTime.Now, 
                     Data = new[] {3, 2, 1}
                 };
                 yield return new EventJob
                 {
-                    Id = 2, Name = "Keira", UserName = "JRN", TimeStamp = DateTime.Now, Status = "Pending",
+                    Id = 2, Name = "Keira", UserName = "JRN", TimeStamp = DateTime.Now, 
                     Data = new[] {5, 4, 3}
                 };
                 yield return new EventJob
                 {
-                    Id = 3, Name = "Orlando", UserName = "JRN", TimeStamp = DateTime.Now, Status = "Pending",
+                    Id = 3, Name = "Orlando", UserName = "JRN", TimeStamp = DateTime.Now, 
                     Data = new[] {3000, 5000, 2000, 8000}
                 };
             }
