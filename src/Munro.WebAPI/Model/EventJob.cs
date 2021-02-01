@@ -52,10 +52,5 @@ namespace EventManager.WebAPI.Model
             Duration = (DateTime.UtcNow - TimeStamp).Ticks;
             IsCompleted = true;
         }
-
-        public void ReProcess()
-        {
-            IsCompleted = false;
-        }
     }
 }
