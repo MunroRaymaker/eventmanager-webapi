@@ -7,7 +7,11 @@ namespace EventManager.WebAPI.Mapping
     {
         public ContractToDomainProfile()
         {
-            CreateMap<EventJobRequest, EventJob>();
+            CreateMap<EventJobRequest, EventJob>()
+                .ForMember(d => d.Id, m => m.Ignore())
+                .ForMember(d => d.TimeStamp, m => m.Ignore())
+                .ForMember(d => d.Duration, m => m.Ignore())
+                .ForMember(d => d.IsCompleted, m => m.Ignore());
         }
     }
 }
