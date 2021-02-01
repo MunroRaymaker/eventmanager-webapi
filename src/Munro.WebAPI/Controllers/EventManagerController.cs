@@ -75,7 +75,7 @@ namespace EventManager.WebAPI.Controllers
             
             this.taskQueue.QueueBackgroundWorkItem(async token => {
 
-                this.logger.LogInformation("Queued background task {Id} started ", id);
+                this.logger.LogInformation("Queued background task with id {Id} started ", id);
                 
                 // get work item from storage
                 var job = this.repository.GetJob(id);
@@ -83,6 +83,8 @@ namespace EventManager.WebAPI.Controllers
                 // sort data
                 job.Data = LongTasks.Sort(job.Data);
                 job.Complete();
+
+                this.logger.LogInformation("Queued background task with id {Id} completed in {Duration} ticks", id, job.Duration);
 
                 // save data
                 this.repository.Upsert(job);

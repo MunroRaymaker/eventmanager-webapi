@@ -22,14 +22,8 @@ namespace EventManager.WebAPI.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //while (!stoppingToken.IsCancellationRequested)
-            //{
-            //    this.logger.LogInformation("QueuedWorkerService running at: {time}", DateTimeOffset.Now);
-            //    await Task.Delay(1000, stoppingToken);
-            //}
-
-            // Wait n seconds before processing
-            await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+            // Wait 60 seconds before processing to allow for some jobs to be added
+            await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
 
             this.logger.LogInformation("Queued Worker Service is running at: {time}.", DateTimeOffset.Now);
             await Process(stoppingToken);
@@ -55,6 +49,9 @@ namespace EventManager.WebAPI.Services
                 {
                     this.logger.LogError(ex, "Error occurred executing {WorkItem}.", nameof(workItem));
                 }
+
+                // Add 60 seconds latency so jobs can be queried
+                await Task.Delay(TimeSpan.FromSeconds(60), ct);
             }
         }
     }
