@@ -43,6 +43,7 @@ This design however will store all data in memory to keep things simple, but it 
 CrewService is build using these technologies 
 * .NET 5.0
 * FluentValidation
+* AutoMapper
 * Swashbuckle
 * XUnit
 * FluentAssertions & Moq

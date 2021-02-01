@@ -1,3 +1,5 @@
+using System.Reflection;
+using AutoMapper;
 using EventManager.WebAPI.Model;
 using EventManager.WebAPI.Services;
 using EventManager.WebAPI.Validators;
@@ -34,6 +36,7 @@ namespace EventManager.WebAPI
             services.AddSingleton<IRepository, Repository>();
             services.AddHostedService<QueuedWorkerService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

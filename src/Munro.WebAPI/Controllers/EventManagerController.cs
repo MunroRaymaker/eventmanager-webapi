@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EventManager.WebAPI.Mapping;
+using AutoMapper;
 using EventManager.WebAPI.Model;
 using EventManager.WebAPI.Services;
 using Microsoft.AspNetCore.Http;
@@ -18,14 +18,17 @@ namespace EventManager.WebAPI.Controllers
         private readonly ILogger<EventManagerController> logger;
         private readonly IRepository repository;
         private readonly IBackgroundTaskQueue taskQueue;
+        private readonly IMapper mapper;
 
         public EventManagerController(ILogger<EventManagerController> logger,
             IBackgroundTaskQueue taskQueue,
-            IRepository repository)
+            IRepository repository, 
+            IMapper mapper)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.taskQueue = taskQueue ?? throw new ArgumentNullException(nameof(taskQueue));
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            this.mapper = mapper;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -65,7 +68,7 @@ namespace EventManager.WebAPI.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             // Save item to storage
-            var id = this.repository.Upsert(Mapper.Map(request));
+            var id = this.repository.Upsert(this.mapper.Map<EventJob>(request));
 
             this.taskQueue.QueueBackgroundWorkItem(async token =>
             {
@@ -76,6 +79,10 @@ namespace EventManager.WebAPI.Controllers
 
                 // sort data
                 job.Data = Worker.Sort(job.Data);
+
+                // Add some delay
+                await Task.Delay(TimeSpan.FromSeconds(2), token);
+
                 job.Complete();
 
                 this.logger.LogInformation("Queued background task with id {Id} completed in {Duration} ticks", id,

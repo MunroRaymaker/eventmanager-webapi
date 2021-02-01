@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Munro.UnitTests
 {
-    public class EventManagerControllerTest
+    public class EventManagerControllerTest : BaseTest
     {
         [Fact]
         public void when_getting_all_jobs_should_return_jobs()
@@ -21,7 +21,7 @@ namespace Munro.UnitTests
             var btq = Mock.Of<IBackgroundTaskQueue>();
             var repo = new Mock<IRepository>(); 
             repo.Setup(x => x.GetJobs()).Returns(TestData);
-            var controller = new EventManagerController(logger, btq, repo.Object);
+            var controller = new EventManagerController(logger, btq, repo.Object, this.Mapper);
 
             // Act
             var response = controller.Get();
