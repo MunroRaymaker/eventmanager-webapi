@@ -20,8 +20,8 @@ namespace EventManager.WebAPI
                 var host = CreateHostBuilder(args).Build();
 
                 // Start the background process to listen for queued work items
-                var backgroundProcessingServiceService = host.Services.GetRequiredService<ProcessingService>();
-                backgroundProcessingServiceService.StartProcessing();
+                //var backgroundProcessingServiceService = host.Services.GetRequiredService<ProcessingService>();
+                //backgroundProcessingServiceService.StartProcessing();
 
                 host.Run();
             }
@@ -55,7 +55,7 @@ namespace EventManager.WebAPI
                 .ConfigureServices((hostContext, services) =>
                 {
                     // Need to register the service early in the pipeline to allow for service startup
-                    services.AddSingleton<ProcessingService>();
+                    //services.AddSingleton<ProcessingService>();
                 });
     }
 }

@@ -31,7 +31,10 @@ namespace EventManager.WebAPI
             });
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<EventJobRequest>, EventJobRequestValidator>();
-            services.AddTransient<IProcessingService, ProcessingService>();
+            //services.AddTransient<IProcessingService, ProcessingService>();
+            services.AddSingleton<IRepository, Repository>();
+            services.AddHostedService<QueuedWorkerService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
