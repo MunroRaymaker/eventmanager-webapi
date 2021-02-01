@@ -35,20 +35,20 @@ namespace EventManager.WebAPI
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-.ConfigureWebHostDefaults(webBuilder =>
-{
-webBuilder.UseStartup<Startup>()
-.ConfigureLogging((hostingContext, logging) =>
-{
-logging.ClearProviders();
-logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-logging.AddConsole();
-logging.SetMinimumLevel(LogLevel.Trace);
-})
-.UseNLog();
-})
-.ConfigureServices((hostContext, services) =>
-{
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>()
+                    .ConfigureLogging((hostingContext, logging) =>
+                    {
+                        logging.ClearProviders();
+                        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                        logging.AddConsole();
+                        logging.SetMinimumLevel(LogLevel.Trace);
+                    })
+                    .UseNLog();
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
                     // If you need to register the service early in the pipeline to allow for service startup, do it here.
                 });
         }
