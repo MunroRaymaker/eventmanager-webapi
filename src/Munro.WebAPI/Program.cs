@@ -1,7 +1,10 @@
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog;
 using NLog.Web;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace EventManager.WebAPI
 {
@@ -19,7 +22,7 @@ namespace EventManager.WebAPI
 
                 host.Run();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 // Catch setup errors
                 logger.Error(ex, "Stopped program because an exception occured");
@@ -28,7 +31,7 @@ namespace EventManager.WebAPI
             finally
             {
                 // Ensure to flush and stop internal timers/threads before application exit (avoid segmentation faults).
-                NLog.LogManager.Shutdown();
+                LogManager.Shutdown();
             }
         }
 
@@ -38,14 +41,14 @@ namespace EventManager.WebAPI
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                    .ConfigureLogging((hostingContext, logging) =>
-                    {
-                        logging.ClearProviders();
-                        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                        logging.AddConsole();
-                        logging.SetMinimumLevel(LogLevel.Trace);
-                    })
-                    .UseNLog();
+                        .ConfigureLogging((hostingContext, logging) =>
+                        {
+                            logging.ClearProviders();
+                            logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                            logging.AddConsole();
+                            logging.SetMinimumLevel(LogLevel.Trace);
+                        })
+                        .UseNLog();
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

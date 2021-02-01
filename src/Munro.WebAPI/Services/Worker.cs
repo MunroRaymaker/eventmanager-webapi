@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 namespace EventManager.WebAPI.Services
 {
     /// <summary>
-    /// Represents a class that holds business logic.
+    ///     Represents a class that holds business logic.
     /// </summary>
     public class Worker
     {
         /// <summary>
-        /// Sorts an array. Default is ascending order.
+        ///     Sorts an array. Default is ascending order.
         /// </summary>
         /// <param name="array">The array of integers to be sorted</param>
         /// <param name="sortOrder">The sorting order.</param>
@@ -18,16 +18,13 @@ namespace EventManager.WebAPI.Services
         {
             Array.Sort(array);
 
-            if (sortOrder == SortOrder.Descending)
-            {
-                Array.Reverse(array);
-            }
+            if (sortOrder == SortOrder.Descending) Array.Reverse(array);
 
             return array;
         }
 
         /// <summary>
-        /// Sorts an array. Default is ascending order.
+        ///     Sorts an array. Default is ascending order.
         /// </summary>
         /// <param name="array">The array of integers to be sorted</param>
         /// <param name="sortOrder">The sorting order.</param>
@@ -38,10 +35,7 @@ namespace EventManager.WebAPI.Services
             {
                 Array.Sort(array);
 
-                if (sortOrder == SortOrder.Descending)
-                {
-                    Array.Reverse(array);
-                }
+                if (sortOrder == SortOrder.Descending) Array.Reverse(array);
 
                 return array;
             });

@@ -1,6 +1,6 @@
+using System.Reflection;
 using AutoMapper;
 using EventManager.WebAPI.Model;
-using EventManager.WebAPI.Services;
 using EventManager.WebAPI.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -12,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System.Reflection;
 
 namespace EventManager.WebAPI
 {
@@ -40,18 +39,15 @@ namespace EventManager.WebAPI
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "EventManager WebAPI", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "EventManager WebAPI", Version = "v1"});
             });
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<EventJobRequest>, EventJobRequestValidator>();
-            services.AddSingleton<IRepository, Repository>();
-            services.AddHostedService<QueuedWorkerService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

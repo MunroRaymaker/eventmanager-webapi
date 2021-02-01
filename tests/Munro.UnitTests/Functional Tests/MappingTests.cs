@@ -1,6 +1,6 @@
-﻿using EventManager.WebAPI.Model;
+﻿using System;
+using EventManager.WebAPI.Model;
 using FluentAssertions;
-using System;
 using Xunit;
 
 namespace Munro.UnitTests.Functional_Tests
@@ -28,7 +28,7 @@ namespace Munro.UnitTests.Functional_Tests
             // Arrange
             var request = new EventJobRequest
             {
-                Data = new []{ 5, 2, 48 },
+                Data = new[] {5, 2, 48},
                 Name = "Foo",
                 UserName = "Bar"
             };

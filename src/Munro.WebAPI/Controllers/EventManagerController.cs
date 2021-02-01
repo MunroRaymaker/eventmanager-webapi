@@ -1,13 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
 using EventManager.WebAPI.Model;
 using EventManager.WebAPI.Services;
 using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace EventManager.WebAPI.Controllers
 {
@@ -15,9 +15,9 @@ namespace EventManager.WebAPI.Controllers
     [Route("[controller]")]
     public class EventManagerController : ControllerBase
     {
+        private readonly JobContext db = new JobContext();
         private readonly ILogger<EventManagerController> logger;
         private readonly IMapper mapper;
-        private readonly JobContext db = new JobContext();
 
         public EventManagerController(ILogger<EventManagerController> logger,
             IMapper mapper)

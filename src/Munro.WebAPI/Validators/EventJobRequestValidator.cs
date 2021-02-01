@@ -4,12 +4,12 @@ using FluentValidation;
 namespace EventManager.WebAPI.Validators
 {
     /// <summary>
-    /// Fluent validation logic for <see cref="EventJobRequest"/> objects.
+    ///     Fluent validation logic for <see cref="EventJobRequest" /> objects.
     /// </summary>
     public class EventJobRequestValidator : AbstractValidator<EventJobRequest>
     {
         /// <summary>
-        /// Rules
+        ///     Rules
         /// </summary>
         public EventJobRequestValidator()
         {

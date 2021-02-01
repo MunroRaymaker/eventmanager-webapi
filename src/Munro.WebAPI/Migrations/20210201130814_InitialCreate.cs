@@ -8,28 +8,25 @@ namespace EventManager.WebAPI.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Jobs",
-                columns: table => new
+                "Jobs",
+                table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>("INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    UserName = table.Column<string>(type: "TEXT", nullable: true),
-                    Data = table.Column<string>(type: "TEXT", nullable: true),
-                    TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Duration = table.Column<long>(type: "INTEGER", nullable: false),
-                    IsCompleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Name = table.Column<string>("TEXT", nullable: true),
+                    UserName = table.Column<string>("TEXT", nullable: true),
+                    Data = table.Column<string>("TEXT", nullable: true),
+                    TimeStamp = table.Column<DateTime>("TEXT", nullable: false),
+                    Duration = table.Column<long>("INTEGER", nullable: false),
+                    IsCompleted = table.Column<bool>("INTEGER", nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Jobs", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Jobs", x => x.Id); });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Jobs");
+                "Jobs");
         }
     }
 }

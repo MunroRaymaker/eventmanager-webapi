@@ -15,11 +15,11 @@ namespace Munro.UnitTests.Functional_Tests
             {
                 Name = "Q1",
                 UserName = "FOO",
-                Data = new []{ 1, 2 }
+                Data = new[] {1, 2}
             };
 
             var validator = new EventJobRequestValidator();
-            
+
             // Act
             var result = validator.Validate(job);
 
@@ -35,7 +35,7 @@ namespace Munro.UnitTests.Functional_Tests
             {
                 Name = "",
                 UserName = "FOO",
-                Data = new []{ 1, 2 }
+                Data = new[] {1, 2}
             };
 
             var validator = new EventJobRequestValidator();
@@ -77,7 +77,7 @@ namespace Munro.UnitTests.Functional_Tests
             {
                 Name = "Q1",
                 UserName = null,
-                Data = new[] { 1, 2 }
+                Data = new[] {1, 2}
             };
 
             var validator = new EventJobRequestValidator();

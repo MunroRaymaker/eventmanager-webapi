@@ -1,13 +1,6 @@
-﻿using AutoMapper.Configuration.Annotations;
-using EventManager.WebAPI.Controllers;
-using EventManager.WebAPI.Model;
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Moq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Xunit;
+using EventManager.WebAPI.Model;
 
 namespace Munro.UnitTests
 {
@@ -37,17 +30,17 @@ namespace Munro.UnitTests
             {
                 yield return new EventJob
                 {
-                    Id = 1, Name = "Johnny", UserName = "JRN", TimeStamp = DateTime.Now, 
+                    Id = 1, Name = "Johnny", UserName = "JRN", TimeStamp = DateTime.Now,
                     Data = new[] {3, 2, 1}
                 };
                 yield return new EventJob
                 {
-                    Id = 2, Name = "Keira", UserName = "JRN", TimeStamp = DateTime.Now, 
+                    Id = 2, Name = "Keira", UserName = "JRN", TimeStamp = DateTime.Now,
                     Data = new[] {5, 4, 3}
                 };
                 yield return new EventJob
                 {
-                    Id = 3, Name = "Orlando", UserName = "JRN", TimeStamp = DateTime.Now, 
+                    Id = 3, Name = "Orlando", UserName = "JRN", TimeStamp = DateTime.Now,
                     Data = new[] {3000, 5000, 2000, 8000}
                 };
             }
