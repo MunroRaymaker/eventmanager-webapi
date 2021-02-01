@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace EventManager.WebAPI.Services
 {
@@ -12,18 +13,22 @@ namespace EventManager.WebAPI.Services
     public class QueuedWorkerService : BackgroundService
     {
         private readonly ILogger<QueuedWorkerService> logger;
+        private readonly int waitDelaySeconds;
         public IBackgroundTaskQueue TaskQueue { get; }
 
-        public QueuedWorkerService(ILogger<QueuedWorkerService> logger, IBackgroundTaskQueue taskQueue)
+
+        public QueuedWorkerService(ILogger<QueuedWorkerService> logger, IBackgroundTaskQueue taskQueue, IConfiguration config)
         {
             this.logger = logger;
+            this.waitDelaySeconds = int.Parse(config.GetSection("WaitDelay").Value);
             TaskQueue = taskQueue;
+            logger.LogInformation($"{nameof(QueuedWorkerService)} WaitDelay is {this.waitDelaySeconds} seconds");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             // Wait 60 seconds before processing to allow for some jobs to be added
-            await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(this.waitDelaySeconds), stoppingToken);
 
             this.logger.LogInformation("Queued Worker Service is running at: {time}.", DateTimeOffset.Now);
             await Process(stoppingToken);
@@ -51,7 +56,7 @@ namespace EventManager.WebAPI.Services
                 }
 
                 // Add 60 seconds latency so jobs can be queried
-                await Task.Delay(TimeSpan.FromSeconds(60), ct);
+                await Task.Delay(TimeSpan.FromSeconds(this.waitDelaySeconds), ct);
             }
         }
     }

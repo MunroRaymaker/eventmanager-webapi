@@ -58,7 +58,7 @@ There is no authentication, so all users can access the api.
 All configuration is located in appSettings.json and for logging, nlog.config.
 
 There are some intentional delays in the the file QueuedWorkerService. This is to allow for querying the data before the processing takes place.
-Try adding some jobs, and then wait to see the results. Only one job a minute will be processed.
+Try adding some jobs, and then wait to see the results. Only one job a minute will be processed. If you want to change the delay go to appSettings.Development.json.
 
 
 ## Code structure
@@ -109,6 +109,5 @@ The application logs using NLog logger to a flat file located in c:\Log. More lo
 No deployment pipeline exists.
 
 ## vNext
-* Make delays configurable
 * Add sqlite database
 * Use Hangfire for background processing
