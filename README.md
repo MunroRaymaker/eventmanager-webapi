@@ -1,9 +1,33 @@
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/MunroRaymaker/eventmanager-webapi/main)
+
 # EventManager WebAPI
 
 ## Brief description
 This an ASP.NET Core WebApi demo project for showcasing a solution to keep track of jobs and their progress.
 It implements a minimal job scheduling solution exposed via a web API. It makes it possible for clients to enqueue an array of numbers to be
 sorted in the background and to query the state of any previously enqueued job.
+
+---
+
+## Contents
+
+- [Requirements](#requirements)
+- [Design](#design)
+  - [Surviving application restarts](#surviving-application-restarts)
+  - [Running in multihosted environments](#running-in-multihosted-environments)
+  - [Separation of concerns](#separation-of-concerns)
+- [Technologies](#technologies)
+- [Technical setup](#technical-setup)
+- [Code structure](#code-structure)
+- [Usage](#usage)  
+  - [Get All](#getall)
+  - [GetById](#getbyid)
+  - [AddJob](#addjob)
+- [Logging](#logging)
+- [Deployment](#deployment)
+- [vNext](#vnext)
+- [References](#references)
+
 
 ---
 
@@ -50,7 +74,7 @@ If everything is kept in memory the queue will be lost if eg. the server is rebo
 The IHostedService however will register the backgroundservice within the application lifetime environment, so when the AppDomain shuts down, a signal will be sent and the StopAsync method will be called.
 This gives the service time to gracefully shutdown, and release any locks. The default timeout is only 5 seconds, so it is increased to 30 seconds in Startup.cs:
 
-```
+``` csharp
 services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(30));
 ```
 
@@ -148,7 +172,7 @@ No deployment pipeline exists.
 
 ---
 
-### References
+## References
 * [https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/background-tasks-with-ihostedservice](Implement background tasks in microservices with IHostedService and the BackgroundService class) and 
 * [https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=netcore-cli](Background tasks with hosted services in ASP.NET Core)
 * [https://haacked.com/archive/2011/10/16/the-dangers-of-implementing-recurring-background-tasks-in-asp-net.aspx/](The Dangers of Implementing Recurring Background Tasks In ASP.NET)
