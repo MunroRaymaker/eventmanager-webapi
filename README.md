@@ -5,6 +5,8 @@ This an ASP.NET Core WebApi demo project for showcasing a solution to keep track
 It implements a minimal job scheduling solution exposed via a web API. It makes it possible for clients to enqueue an array of numbers to be
 sorted in the background and to query the state of any previously enqueued job.
 
+---
+
 ## Requirements
 The design has these requirements:
 
@@ -23,6 +25,7 @@ Apart from the input and output arrays a job should include the following metada
 All jobs should be processed in the background and clients should not forced to wait for jobs to complete.
 To view the output of a job (the sorted array), the client must query a previously enqueued job.
 
+---
 
 ## Design
 The design is based on a fire-and-forget pattern. The client sends a job to the api, and receives an id back immediatly. The client must poll the api 
@@ -58,6 +61,7 @@ The design also has a flaw in that if the site runs in a web farm, you could end
 The web api should ideally not run the queuing tasks itself, but instead delegate them to a central external messaging system like Azure Service Bus or RabbitMQ.
 The data could be stored in Blob storage, which then could trigger a service bus event that processes the data. This would be a more robust design.
 
+---
 
 ## Technologies
 EventManager is build using these technologies 
@@ -67,6 +71,8 @@ EventManager is build using these technologies
 * Swashbuckle
 * XUnit
 * FluentAssertions & Moq
+
+---
 
 ## Technical setup
 EventManager runs as a web api and can be started either from Visual Studio or VS Code using F5 or from the command line using
@@ -81,6 +87,7 @@ All configuration is located in appSettings.json and for logging, nlog.config.
 There are some intentional delays in the the file QueuedWorkerService. This is to allow for querying the data before the processing takes place.
 Try adding some jobs, and then wait to see the results. Only one job a minute will be processed. If you want to change the delay go to appSettings.Development.json.
 
+---
 
 ## Code structure
 The solution consists of this project:
@@ -90,6 +97,7 @@ The solution consists of this project:
 There is also a unit test project(s).
 * Munro.UnitTests
 
+---
 
 ## Usage
 The WebAPI uses Swagger to make it easy to test the api. Simply visit http://localhost:port/swagger/index.html and learn the api. 
@@ -122,17 +130,26 @@ The methods exposed are:
 ### AddJob
 > curl -X POST "http://localhost:4298/EventManager/AddJob" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "[1,2,3]"
 
+---
 
 ## Logging
 The application logs using NLog logger to a flat file located in c:\Log. More log targets can be configured in nlog.config. For more info visit [https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-5](https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-5).
 
+---
+
 ## Deployment
 No deployment pipeline exists.
+
+---
 
 ## vNext
 * Add sqlite database
 * Use Hangfire for background processing
 
+---
+
 ### References
 * [https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/background-tasks-with-ihostedservice](Implement background tasks in microservices with IHostedService and the BackgroundService class) and 
 * [https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=netcore-cli](Background tasks with hosted services in ASP.NET Core)
+* [https://haacked.com/archive/2011/10/16/the-dangers-of-implementing-recurring-background-tasks-in-asp-net.aspx/](The Dangers of Implementing Recurring Background Tasks In ASP.NET)
+* [https://andrewlock.net/extending-the-shutdown-timeout-setting-to-ensure-graceful-ihostedservice-shutdown/](Extending the shutdown timeout setting to ensure graceful IHostedService shutdown)
