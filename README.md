@@ -1,4 +1,5 @@
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/MunroRaymaker/eventmanager-webapi/main)
+[![Build and test](https://github.com/MunroRaymaker/eventmanager-webapi/workflows/Build%20and%20test/badge.svg?style=flat-square)](https://github.com/MunroRaymaker/eventmanager-webapi/actions)
 
 # EventManager WebAPI
 
