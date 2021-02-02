@@ -61,10 +61,10 @@ This design will store all data in memory to keep things simple, but it should b
 
 So there will be three components to the solution:
 * WebAPI - responsible for receiving jobs and getting status
-* A QueuedWorkerService which submits events, checks completion and returns results
-* A BackendTaskQueue which holds the actual queue, and ensured thread safe access to enqueuing and dequeueing.
+* A `QueuedWorkerService` which submits events, checks completion and returns results
+* A `BackendTaskQueue` which holds the actual queue, and ensured thread safe access to enqueuing and dequeueing.
 
-The design uses the IHostedService interface from Microsoft.Extensions.Hosting to create the background queue which listens for events, and processes them.
+The design uses the `IHostedService` interface from Microsoft.Extensions.Hosting to create the background queue which listens for events, and processes them.
 
 But beware - there be dragons with this design.
 
@@ -106,9 +106,9 @@ dotnet run
 ```
 
 There is no authentication, so all users can access the api.
-All configuration is located in appSettings.json and for logging, nlog.config.
+All configuration is located in `appSettings.json` and for logging `nlog.config`.
 
-There are some intentional delays in the the file QueuedWorkerService. This is to allow for querying the data before the processing takes place.
+There are some intentional delays in the file `QueuedWorkerService.cs`. This is to allow for querying the data before the processing takes place.
 Try adding some jobs, and then wait to see the results. Only one job a minute will be processed. If you want to change the delay go to appSettings.Development.json.
 
 ---
@@ -173,7 +173,7 @@ No deployment pipeline exists.
 ---
 
 ## References
-* [Implement background tasks in microservices with IHostedService and the BackgroundService class] (https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/background-tasks-with-ihostedservice)
+* [Implement background tasks in microservices with IHostedService and the BackgroundService class](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/background-tasks-with-ihostedservice)
 * [Background tasks with hosted services in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=netcore-cli)
 * [The Dangers of Implementing Recurring Background Tasks In ASP.NET](https://haacked.com/archive/2011/10/16/the-dangers-of-implementing-recurring-background-tasks-in-asp-net.aspx/)
 * [Extending the shutdown timeout setting to ensure graceful IHostedService shutdown](https://andrewlock.net/extending-the-shutdown-timeout-setting-to-ensure-graceful-ihostedservice-shutdown/)
