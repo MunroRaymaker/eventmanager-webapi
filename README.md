@@ -30,6 +30,8 @@ to see the progress of the job. In this simplistic solution we don't keep track 
 
 The eventmanager api should defer the actual CPU processing to another background thread. This makes the design scalable so many requests can be received, without depleting the IIS thread pool.
 
+This design will store all data in memory to keep things simple, but it should be trivial to add a database later on, like sql server or sqlite.
+
 So there will be three components to the solution:
 * WebAPI - responsible for receiving jobs and getting status
 * A QueuedWorkerService which submits events, checks completion and returns results
@@ -41,8 +43,13 @@ But beware - there be dragons with this design.
 
 ### Surviving application restarts
 The application could restart for a number of reasons, so we should think about persisting the queue of jobs if the AppDomain is lost. 
-If everything is kept in memory the queue will be lost if eg. the server is rebooted. We loose track of how far the processing went, and jobs could be lost or data corrupted. 
-This design however will store all data in memory to keep things simple, but it should be trivial to add a database later on, like sql server or sqlite.
+If everything is kept in memory the queue will be lost if eg. the server is rebooted or the application pool recycles. We loose track of how far the processing went, and jobs could be lost or data corrupted. 
+The IHostedService however will register the backgroundservice within the application lifetime environment, so when the AppDomain shuts down, a signal will be sent and the StopAsync method will be called.
+This gives the service time to gracefully shutdown, and release any locks. The default timeout is only 5 seconds, so it is increased to 30 seconds in Startup.cs:
+
+```
+services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(30));
+```
 
 ### Running in multihosted environments
 The design also has a flaw in that if the site runs in a web farm, you could end up with multiple instances of the app that all attempt to run the same task at the same time.

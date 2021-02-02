@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using AutoMapper;
 using EventManager.WebAPI.Model;
@@ -37,6 +38,9 @@ namespace EventManager.WebAPI
             services.AddHostedService<QueuedWorkerService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            // Allows services to shutdown gracefully within 30 seconds instead of the default 5s. 
+            services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromSeconds(30));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
