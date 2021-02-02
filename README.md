@@ -25,6 +25,7 @@ sorted in the background and to query the state of any previously enqueued job.
   - [GetById](#getbyid)
   - [AddJob](#addjob)
 - [Logging](#logging)
+- [Testing](#testing)
 - [Deployment](#deployment)
 - [vNext](#vnext)
 - [References](#references)
@@ -117,7 +118,7 @@ Try adding some jobs, and then wait to see the results. Only one job a minute wi
 ## Code structure
 The solution consists of this project:
 
-1. Munnro.WebAPI
+1. Munro.WebAPI
 
 There is also a unit test project(s).
 * Munro.UnitTests
@@ -125,7 +126,13 @@ There is also a unit test project(s).
 ---
 
 ## Usage
-The WebAPI uses Swagger to make it easy to test the api. Simply visit http://localhost:port/swagger/index.html and learn the api. 
+The WebAPI uses Swagger to make it easy to test the api. Simply run 
+
+```
+dotnet run
+```
+
+and visit http://localhost:port/swagger/index.html and learn the api. 
 
 To test the API go to [http://localhost:port/swagger/index.html](http://localhost:port/swagger/index.html) and click POST EventManager/AddJob.
 Then add some jobs with a name, username and an array of integers.
@@ -159,6 +166,16 @@ The methods exposed are:
 
 ## Logging
 The application logs using NLog logger to a flat file located in c:\Log. More log targets can be configured in nlog.config. For more info visit [https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-5](https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-5).
+
+---
+
+## Testing
+The application can be tested from the commandline. Please run
+
+```
+dotnet test
+```
+This will execute all unit tests.
 
 ---
 
