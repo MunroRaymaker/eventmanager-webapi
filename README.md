@@ -20,7 +20,7 @@ Apart from the input and output arrays a job should include the following metada
 * A duration - how much time did it take to execute the job?
 * A status - for example "pending" or "completed"
 
-All jobs should be processed in the background and clients should not be forced to wait for jobs to complete.
+All jobs should be processed in the background and clients should not forced to wait for jobs to complete.
 To view the output of a job (the sorted array), the client must query a previously enqueued job.
 
 
@@ -32,15 +32,28 @@ The eventmanager api should defer the actual CPU processing to another backgroun
 
 So there will be three components to the solution:
 * WebAPI - responsible for receiving jobs and getting status
-* An EventService which submits events, checks completion and returns results
-* Backend logic which will listen for events, run tasks and return results
+* A QueuedWorkerService which submits events, checks completion and returns results
+* A BackendTaskQueue which holds the actual queue, and ensured thread safe access to enqueuing and dequeueing.
+
+The design uses the IHostedService interface from Microsoft.Extensions.Hosting to create the background queue which listens for events, and processes them.
+
+But beware - there be dragons with this design.
 
 ### Surviving application restarts
-The application could restart for a number of reasons, so we should think about persisting the queue of jobs. If everything is kept in memory the queue will be lost if eg. the server is rebooted.
-This design however will store all data in memory to keep things simple, but it should be trivial to add a database later on.
+The application could restart for a number of reasons, so we should think about persisting the queue of jobs if the AppDomain is lost. 
+If everything is kept in memory the queue will be lost if eg. the server is rebooted. We loose track of how far the processing went, and jobs could be lost or data corrupted. 
+This design however will store all data in memory to keep things simple, but it should be trivial to add a database later on, like sql server or sqlite.
+
+### Running in multihosted environments
+The design also has a flaw in that if the site runs in a web farm, you could end up with multiple instances of the app that all attempt to run the same task at the same time.
+
+### Separation of concerns
+The web api should ideally not run the queuing tasks itself, but instead delegate them to a central external messaging system like Azure Service Bus or RabbitMQ.
+The data could be stored in Blob storage, which then could trigger a service bus event that processes the data. This would be a more robust design.
+
 
 ## Technologies
-CrewService is build using these technologies 
+EventManager is build using these technologies 
 * .NET 5.0
 * FluentValidation
 * AutoMapper
@@ -112,3 +125,7 @@ No deployment pipeline exists.
 ## vNext
 * Add sqlite database
 * Use Hangfire for background processing
+
+### References
+* [https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/background-tasks-with-ihostedservice](Implement background tasks in microservices with IHostedService and the BackgroundService class) and 
+* [https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=netcore-cli](Background tasks with hosted services in ASP.NET Core)
