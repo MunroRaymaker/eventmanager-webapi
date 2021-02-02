@@ -20,7 +20,7 @@ sorted in the background and to query the state of any previously enqueued job.
 - [Technical setup](#technical-setup)
 - [Code structure](#code-structure)
 - [Usage](#usage)  
-  - [Get All](#getall)
+  - [Get All](#get-all)
   - [GetById](#getbyid)
   - [AddJob](#addjob)
 - [Logging](#logging)
@@ -173,7 +173,7 @@ No deployment pipeline exists.
 ---
 
 ## References
-* [https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/background-tasks-with-ihostedservice](Implement background tasks in microservices with IHostedService and the BackgroundService class) and 
-* [https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=netcore-cli](Background tasks with hosted services in ASP.NET Core)
-* [https://haacked.com/archive/2011/10/16/the-dangers-of-implementing-recurring-background-tasks-in-asp-net.aspx/](The Dangers of Implementing Recurring Background Tasks In ASP.NET)
-* [https://andrewlock.net/extending-the-shutdown-timeout-setting-to-ensure-graceful-ihostedservice-shutdown/](Extending the shutdown timeout setting to ensure graceful IHostedService shutdown)
+* [Implement background tasks in microservices with IHostedService and the BackgroundService class] (https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/background-tasks-with-ihostedservice)
+* [Background tasks with hosted services in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=netcore-cli)
+* [The Dangers of Implementing Recurring Background Tasks In ASP.NET](https://haacked.com/archive/2011/10/16/the-dangers-of-implementing-recurring-background-tasks-in-asp-net.aspx/)
+* [Extending the shutdown timeout setting to ensure graceful IHostedService shutdown](https://andrewlock.net/extending-the-shutdown-timeout-setting-to-ensure-graceful-ihostedservice-shutdown/)
