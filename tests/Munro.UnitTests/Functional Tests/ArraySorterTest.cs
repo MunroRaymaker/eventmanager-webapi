@@ -12,8 +12,11 @@ namespace Munro.UnitTests.Functional_Tests
         [InlineData(new[] { 0, -9, -3 })]
         public void when_sorting_array_should_be_in_sorted_order(int[] input)
         {
+            // Arrange
+            var worker = new Worker();
+
             // Act
-            var actual = Worker.Sort(input);
+            var actual = worker.DoWork(input);
 
             // Assert
             actual.Should().BeInAscendingOrder("Because it was sorted");

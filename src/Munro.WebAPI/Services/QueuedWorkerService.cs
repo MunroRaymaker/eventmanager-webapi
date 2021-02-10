@@ -44,6 +44,7 @@ namespace EventManager.WebAPI.Services
         {
             while (!ct.IsCancellationRequested)
             {
+                // TODO Peek here. Peek log in service..
                 var workItem = await TaskQueue.DequeueAsync(ct);
 
                 try

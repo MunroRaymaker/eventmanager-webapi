@@ -45,12 +45,20 @@ namespace EventManager.WebAPI.Model
         /// <summary>
         /// Gets the status of the job.
         /// </summary>
-        public string Status => IsCompleted ? "Completed" : "Pending";
+        public string Status => IsFailed ? "Failed" : IsCompleted ? "Completed" : "Pending";
+
+        public bool IsFailed { get; private set; }
 
         public void Complete()
         {
             Duration = (DateTime.UtcNow - TimeStamp).Ticks;
             IsCompleted = true;
+        }
+
+        public void Failed()
+        {
+            Duration = (DateTime.UtcNow - TimeStamp).Ticks;
+            IsFailed = true;
         }
     }
 }

@@ -20,8 +20,9 @@ namespace Munro.UnitTests
             var logger = Mock.Of<ILogger<EventManagerController>>();
             var btq = Mock.Of<IBackgroundTaskQueue>();
             var repo = new Mock<IRepository>(); 
+            var worker = new Worker();
             repo.Setup(x => x.GetJobs()).Returns(TestData);
-            var controller = new EventManagerController(logger, btq, repo.Object, this.Mapper);
+            var controller = new EventManagerController(logger, btq, repo.Object, this.Mapper, worker);
 
             // Act
             var response = controller.Get();

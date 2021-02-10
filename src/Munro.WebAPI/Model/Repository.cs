@@ -11,8 +11,10 @@ namespace EventManager.WebAPI.Model
     public class Repository : IRepository
     {
         private readonly ILogger<Repository> logger;
-
-        private static IList<EventJob> EventJobs { get; } = new List<EventJob>();
+        
+        // Dictionary does not use O(n) but implements a hashing algorithm to find data.
+        private static IDictionary<int, EventJob> EventJobs { get; } = new Dictionary<int, EventJob>();
+        private readonly object readLock = new object();
 
         public Repository(ILogger<Repository> logger)
         {
@@ -28,9 +30,13 @@ namespace EventManager.WebAPI.Model
                 // New job
                 if (item == null)
                 {
-                    job.Id = GetJobs().Any() ? GetJobs().Max(x => x.Id) + 1 : 1;
+                    lock (readLock)
+                    {
+                        job.Id = GetJobs().Any() ? GetJobs().Max(x => x.Id) + 1 : 1;
+                    }
+
                     job.TimeStamp = DateTime.UtcNow;
-                    EventJobs.Add(job);
+                    EventJobs.Add(job.Id, job);
                     return job.Id;
                 }
 
@@ -44,18 +50,18 @@ namespace EventManager.WebAPI.Model
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Unable to upsert job.");
-                return -1;
+                throw;
             }
         }
 
         public IEnumerable<EventJob> GetJobs()
         {
-            return EventJobs;
+            return EventJobs.Values;
         }
 
         public EventJob GetJob(int id)
         {
-            return EventJobs.SingleOrDefault(x => x.Id == id);
+            return EventJobs.TryGetValue(id, out var job) ? job : null;
         }
     }
 }

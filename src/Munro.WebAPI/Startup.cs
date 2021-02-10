@@ -35,6 +35,7 @@ namespace EventManager.WebAPI
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<EventJobRequest>, EventJobRequestValidator>();
             services.AddSingleton<IRepository, Repository>();
+            services.AddSingleton<IWorker, Worker>();
             services.AddHostedService<QueuedWorkerService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
