@@ -108,5 +108,35 @@ namespace EventManager.WebAPI.Controllers
 
             return id;
         }
+
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] EventJob job)
+        {
+            // Update existing job
+            this.logger.LogInformation($"'{nameof(Put)}' has been invoked for id '{id}'.");
+
+            // TODO validate input
+
+            var jobId = this.repository.Upsert(job);
+
+            return Ok(jobId);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            // Delete job
+            this.logger.LogInformation($"'{nameof(Delete)}' has been invoked for id '{id}'.");
+
+            // get work item from storage
+            var job = this.repository.GetJob(id);
+
+            if (job == null) return NotFound();
+            
+            // TODO Delete the job
+
+
+            return Ok();
+        }
     }
 }
