@@ -22,7 +22,7 @@ sorted in the background and to query the state of any previously enqueued job.
 - [Code structure](#code-structure)
 - [Usage](#usage)  
   - [Get](#get)
-  - [Get/1](#get/1)
+  - [Get/id](#get/id)
   - [Create](#create)
   - [Put](#put)
   - [Delete](#delete)
