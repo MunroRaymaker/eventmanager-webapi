@@ -23,5 +23,11 @@ namespace EventManager.WebAPI.Model
         /// <param name="id">The id to search for.</param>
         /// <returns>An <see cref="EventJob"/> object if exists. Returns null if not found.</returns>
         EventJob GetJob(int id);
+
+        /// <summary>
+        /// Deletes a job by it's id.
+        /// </summary>
+        /// <param name="id">The id to delete.</param>
+        void DeleteJob(int id);
     }
 }

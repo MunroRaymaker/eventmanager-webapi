@@ -18,4 +18,20 @@ namespace EventManager.WebAPI.Validators
             RuleFor(e => e.Data).NotEmpty();
         }
     }
+
+    /// <summary>
+    /// Fluent validation logic for <see cref="EventJob"/> objects.
+    /// </summary>
+    public class EventJobValidator : AbstractValidator<EventJob>
+    {
+        /// <summary>
+        /// Rules
+        /// </summary>
+        public EventJobValidator()
+        {
+            RuleFor(e => e.Name).NotEmpty();
+            RuleFor(e => e.UserName).NotEmpty();
+            RuleFor(e => e.Data).NotEmpty();
+        }
+    }
 }

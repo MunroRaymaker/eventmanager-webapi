@@ -33,10 +33,10 @@ namespace EventManager.WebAPI.Model
                     lock (readLock)
                     {
                         job.Id = GetJobs().Any() ? GetJobs().Max(x => x.Id) + 1 : 1;
+                        job.TimeStamp = DateTime.UtcNow;
+                        EventJobs.Add(job.Id, job);                
                     }
 
-                    job.TimeStamp = DateTime.UtcNow;
-                    EventJobs.Add(job.Id, job);
                     return job.Id;
                 }
 
@@ -62,6 +62,11 @@ namespace EventManager.WebAPI.Model
         public EventJob GetJob(int id)
         {
             return EventJobs.TryGetValue(id, out var job) ? job : null;
+        }
+
+        public void DeleteJob(int id)
+        {
+            EventJobs.Remove(id);
         }
     }
 }

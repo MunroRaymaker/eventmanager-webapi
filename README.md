@@ -21,9 +21,11 @@ sorted in the background and to query the state of any previously enqueued job.
 - [Technical setup](#technical-setup)
 - [Code structure](#code-structure)
 - [Usage](#usage)  
-  - [Get All](#get-all)
-  - [GetById](#getbyid)
-  - [AddJob](#addjob)
+  - [Get](#get)
+  - [Get/1](#get/1)
+  - [Create](#create)
+  - [Put](#put)
+  - [Delete](#delete)
 - [Logging](#logging)
 - [Testing](#testing)
 - [Deployment](#deployment)
@@ -153,14 +155,20 @@ An example of the console output can be seen here.
 
 The methods exposed are:
 
-### Get All
+### Get
 > curl -X GET "http://localhost:4298/EventManager" -H  "accept: text/plain"
 
-### GetById
-> curl -X GET "http://localhost:4298/EventManager/byId/1" -H  "accept: text/plain"
+### Get/id
+> curl -X GET "http://localhost:4298/EventManager/1" -H  "accept: text/plain"
 
-### AddJob
-> curl -X POST "http://localhost:4298/EventManager/AddJob" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "[1,2,3]"
+### Create
+> curl -X POST "http://localhost:4298/EventManager/" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "[1,2,3]"
+
+### Put
+> curl -X PUT "http://localhost:5000/EventManager" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"id\":0,\"name\":\"string\",\"userName\":\"string\",\"data\":[1,4,2],\"timeStamp\":\"2021-02-12T21:59:42.928Z\"}"
+
+### Delete
+> curl -X DELETE "http://localhost:5000/EventManager/1" -H  "accept: */*"
 
 ---
 

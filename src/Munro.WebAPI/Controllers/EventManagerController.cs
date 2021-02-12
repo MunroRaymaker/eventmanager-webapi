@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using AutoMapper;
 using EventManager.WebAPI.Model;
@@ -34,7 +35,7 @@ namespace EventManager.WebAPI.Controllers
             this.worker = worker ?? throw new ArgumentNullException(nameof(worker));
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventJob))]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpGet]
         public ActionResult<IEnumerable<EventJob>> Get()
@@ -46,13 +47,13 @@ namespace EventManager.WebAPI.Controllers
             return this.repository.GetJobs().ToArray();
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventJob))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{id}")]
         public ActionResult<EventJob> Get(int id)
         {
             this.logger.LogInformation($"'{nameof(Get)}' has been invoked with id '{id}'.");
-
+            
             var job = this.repository.GetJob(id);
 
             if (job == null) return NotFound();
@@ -60,7 +61,8 @@ namespace EventManager.WebAPI.Controllers
             return job;
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
@@ -71,7 +73,9 @@ namespace EventManager.WebAPI.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             // Save item to storage
-            var id = this.repository.Upsert(this.mapper.Map<EventJob>(request));
+            var job = this.mapper.Map<EventJob>(request);
+            var id = this.repository.Upsert(job);
+            job.Id = id;
 
             this.taskQueue.QueueBackgroundWorkItem(async token =>
             {
@@ -103,25 +107,30 @@ namespace EventManager.WebAPI.Controllers
 
                 // save data
                 this.repository.Upsert(job);
-
             });
-
-            return id;
+            
+            return CreatedAtAction(nameof(Get), new { id = id }, job);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] EventJob job)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPut]
+        public ActionResult<int> Put([FromBody] EventJob job)
         {
             // Update existing job
-            this.logger.LogInformation($"'{nameof(Put)}' has been invoked for id '{id}'.");
+            this.logger.LogInformation($"'{nameof(Put)}' has been invoked for id '{job.Id}'.");
 
-            // TODO validate input
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var jobId = this.repository.Upsert(job);
 
-            return Ok(jobId);
+            return jobId;
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -133,8 +142,7 @@ namespace EventManager.WebAPI.Controllers
 
             if (job == null) return NotFound();
             
-            // TODO Delete the job
-
+            this.repository.DeleteJob(id);
 
             return Ok();
         }
