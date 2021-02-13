@@ -122,11 +122,48 @@ namespace EventManager.WebAPI.Controllers
             this.logger.LogInformation($"'{nameof(Put)}' has been invoked for id '{job.Id}'.");
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            
+            // Save item to storage
+            var id = this.repository.Upsert(job);
+            job.Id = id;
 
-            var jobId = this.repository.Upsert(job);
+            this.taskQueue.QueueBackgroundWorkItem(async token =>
+            {
+                this.logger.LogInformation("Queued background task with id {Id} started ", id);
 
-            return jobId;
+                // get work item from storage
+                var job = this.repository.GetJob(id);
+                
+                try
+                {
+                    // sort data
+                    job.Data = worker.DoWork(job.Data);
+
+                    // Add some delay
+                    await Task.Delay(TimeSpan.FromSeconds(2), token);
+
+                    job.Complete();
+                }
+                catch (Exception ex)
+                {
+                    // What if DoWork fails? Mark as failed and refer to manual processing.
+                    this.logger.LogError("Queued background task with id {Id} failed with message: {Message}", id, ex.Message);
+
+                    job.Failed();
+                }
+
+                this.logger.LogInformation("Queued background task with id {Id} completed in {Duration} ticks", id,
+                    job.Duration);
+
+                // save data
+                this.repository.Upsert(job);
+            });
+            
+            return CreatedAtAction(nameof(Get), new { id = id }, job);
         }
+
+        // TODO JsonPatch
+        // https://docs.microsoft.com/en-us/aspnet/core/web-api/jsonpatch?view=aspnetcore-5.0
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
