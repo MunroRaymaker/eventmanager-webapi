@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EventManager.WebAPI.Services
 {
@@ -22,6 +23,12 @@ namespace EventManager.WebAPI.Services
         public int[] DoWork(IEnumerable<int> data, SortOrder sortOrder = SortOrder.Ascending)
         {
             var array = data as int[] ?? Array.Empty<int>();
+
+            // For debugging
+            if(array.Contains(99))
+            {
+                throw new ArgumentException("Value must not be 99 for some strange reason");
+            }
 
             Array.Sort(array);
 
