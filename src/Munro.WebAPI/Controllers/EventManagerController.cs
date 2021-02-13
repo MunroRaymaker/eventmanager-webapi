@@ -54,6 +54,11 @@ namespace EventManager.WebAPI.Controllers
         {
             this.logger.LogInformation($"'{nameof(Get)}' has been invoked with id '{id}'.");
             
+            if(id == -1)
+            {
+                throw new ArgumentException("This is just a demo for the error page.");
+            }
+
             var job = this.repository.GetJob(id);
 
             if (job == null) return NotFound();
@@ -112,7 +117,7 @@ namespace EventManager.WebAPI.Controllers
             return CreatedAtAction(nameof(Get), new { id = id }, job);
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPut]

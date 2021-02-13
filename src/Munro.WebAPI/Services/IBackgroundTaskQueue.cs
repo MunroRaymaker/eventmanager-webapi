@@ -18,5 +18,12 @@ namespace EventManager.WebAPI.Services
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Func with the task to be processed.</returns>
         Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Peek at a work item from a background queue.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Func with the task to be processed.</returns>
+        Task<Func<CancellationToken, Task>> PeekAsync(CancellationToken cancellationToken);
     }
 }

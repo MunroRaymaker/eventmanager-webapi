@@ -49,9 +49,13 @@ namespace EventManager.WebAPI
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();                
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "eventmanager_webapi v1"));
+            }
+            else
+            {
+                app.UseExceptionHandler("/error");
             }
 
             app.UseRouting();

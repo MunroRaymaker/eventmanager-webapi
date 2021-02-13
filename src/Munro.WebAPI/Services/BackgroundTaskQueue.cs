@@ -27,5 +27,12 @@ namespace EventManager.WebAPI.Services
             this.workItems.TryDequeue(out var workItem);
             return workItem;
         }
+
+        public async Task<Func<CancellationToken, Task>> PeekAsync(CancellationToken cancellationToken)
+        {
+            await this.signal.WaitAsync(cancellationToken);
+            this.workItems.TryPeek(out var workItem);
+            return workItem;
+        }
     }
 }

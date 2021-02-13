@@ -45,11 +45,15 @@ namespace EventManager.WebAPI.Services
             while (!ct.IsCancellationRequested)
             {
                 // TODO Peek here. Peek log in service..
+                //var workItem = await TaskQueue.PeekAsync(ct);
                 var workItem = await TaskQueue.DequeueAsync(ct);
 
                 try
                 {
                     await workItem(ct);
+
+                    // All is well so remove item from queue
+                    //_ = await TaskQueue.DequeueAsync(ct);
                 }
                 catch (Exception ex)
                 {
