@@ -14,15 +14,15 @@ namespace EventManager.WebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class EventManagerController : ControllerBase
+    public class JobController : ControllerBase
     {
-        private readonly ILogger<EventManagerController> logger;
+        private readonly ILogger<JobController> logger;
         private readonly IRepository repository;
         private readonly IBackgroundTaskQueue taskQueue;
         private readonly IMapper mapper;
         private readonly IWorker worker;
 
-        public EventManagerController(ILogger<EventManagerController> logger,
+        public JobController(ILogger<JobController> logger,
             IBackgroundTaskQueue taskQueue,
             IRepository repository, 
             IMapper mapper,
@@ -35,10 +35,10 @@ namespace EventManager.WebAPI.Controllers
             this.worker = worker ?? throw new ArgumentNullException(nameof(worker));
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventJob))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Job))]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpGet]
-        public ActionResult<IEnumerable<EventJob>> Get()
+        public ActionResult<IEnumerable<Job>> Get()
         {
             this.logger.LogInformation($"'{nameof(Get)}' has been invoked.");
 
@@ -47,10 +47,10 @@ namespace EventManager.WebAPI.Controllers
             return this.repository.GetJobs().ToArray();
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EventJob))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Job))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{id}")]
-        public ActionResult<EventJob> Get(int id)
+        public ActionResult<Job> Get(int id)
         {
             this.logger.LogInformation($"'{nameof(Get)}' has been invoked with id '{id}'.");
             
@@ -71,14 +71,14 @@ namespace EventManager.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public ActionResult<int> Create([FromBody] EventJobRequest request)
+        public ActionResult<int> Create([FromBody] JobRequest request)
         {
             this.logger.LogInformation($"'{nameof(Create)}' has been invoked.");
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             // Save item to storage
-            var job = this.mapper.Map<EventJob>(request);
+            var job = this.mapper.Map<Job>(request);
             var id = this.repository.Upsert(job);
             job.Id = id;
 
@@ -121,7 +121,7 @@ namespace EventManager.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPut]
-        public ActionResult<int> Put([FromBody] EventJob job)
+        public ActionResult<int> Put([FromBody] Job job)
         {
             // Update existing job
             this.logger.LogInformation($"'{nameof(Put)}' has been invoked for id '{job.Id}'.");

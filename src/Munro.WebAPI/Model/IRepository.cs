@@ -7,22 +7,22 @@ namespace EventManager.WebAPI.Model
         /// <summary>
         /// Inserts or updates a job.
         /// </summary>
-        /// <param name="job">The <see cref="EventJob"/> to be saved.</param>
+        /// <param name="job">The <see cref="Job"/> to be saved.</param>
         /// <returns>The id of the job.</returns>
-        int Upsert(EventJob job);
+        int Upsert(Job job);
 
         /// <summary>
         /// Gets all jobs.
         /// </summary>
-        /// <returns>A list of <see cref="EventJob"/> objects.</returns>
-        IEnumerable<EventJob> GetJobs();
+        /// <returns>A list of <see cref="Job"/> objects.</returns>
+        IEnumerable<Job> GetJobs();
 
         /// <summary>
         /// Gets a job by it's id.
         /// </summary>
         /// <param name="id">The id to search for.</param>
-        /// <returns>An <see cref="EventJob"/> object if exists. Returns null if not found.</returns>
-        EventJob GetJob(int id);
+        /// <returns>An <see cref="Job"/> object if exists. Returns null if not found.</returns>
+        Job GetJob(int id);
 
         /// <summary>
         /// Deletes a job by it's id.

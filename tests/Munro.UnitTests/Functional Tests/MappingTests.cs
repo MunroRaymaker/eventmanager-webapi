@@ -14,7 +14,7 @@ namespace Munro.UnitTests.Functional_Tests
         }
 
         [Theory]
-        [InlineData(typeof(EventJobRequest), typeof(EventJob))]
+        [InlineData(typeof(JobRequest), typeof(Job))]
         public void should_support_mapping_from_source_to_destination(Type source, Type destination)
         {
             var instance = Activator.CreateInstance(source);
@@ -26,7 +26,7 @@ namespace Munro.UnitTests.Functional_Tests
         public void when_eventrequest_should_map_to_eventjob()
         {
             // Arrange
-            var request = new EventJobRequest
+            var request = new JobRequest
             {
                 Data = new []{ 5, 2, 48 },
                 Name = "Foo",
@@ -34,7 +34,7 @@ namespace Munro.UnitTests.Functional_Tests
             };
 
             // Act
-            var job = this.Mapper.Map<EventJob>(request);
+            var job = this.Mapper.Map<Job>(request);
 
             // Assert
             job.UserName.Should().Be("Bar");

@@ -5,20 +5,20 @@ using Xunit;
 
 namespace Munro.UnitTests.Functional_Tests
 {
-    public class EventJobRequestValidationTest
+    public class JobRequestValidationTest
     {
         [Fact]
         public void when_valid_jobrequest_should_pass_validation()
         {
             // Arrange
-            var job = new EventJobRequest
+            var job = new JobRequest
             {
                 Name = "Q1",
                 UserName = "FOO",
                 Data = new []{ 1, 2 }
             };
 
-            var validator = new EventJobRequestValidator();
+            var validator = new JobRequestValidator();
             
             // Act
             var result = validator.Validate(job);
@@ -31,14 +31,14 @@ namespace Munro.UnitTests.Functional_Tests
         public void jobname_should_not_be_empty()
         {
             // Arrange
-            var job = new EventJobRequest
+            var job = new JobRequest
             {
                 Name = "",
                 UserName = "FOO",
                 Data = new []{ 1, 2 }
             };
 
-            var validator = new EventJobRequestValidator();
+            var validator = new JobRequestValidator();
 
             // Act
             var result = validator.Validate(job);
@@ -52,14 +52,14 @@ namespace Munro.UnitTests.Functional_Tests
         public void data_should_not_be_empty()
         {
             // Arrange
-            var job = new EventJobRequest
+            var job = new JobRequest
             {
                 Name = "Q1",
                 UserName = "FOO",
                 Data = new int[0]
             };
 
-            var validator = new EventJobRequestValidator();
+            var validator = new JobRequestValidator();
 
             // Act
             var result = validator.Validate(job);
@@ -73,14 +73,14 @@ namespace Munro.UnitTests.Functional_Tests
         public void username_should_not_be_empty()
         {
             // Arrange
-            var job = new EventJobRequest
+            var job = new JobRequest
             {
                 Name = "Q1",
                 UserName = null,
                 Data = new[] { 1, 2 }
             };
 
-            var validator = new EventJobRequestValidator();
+            var validator = new JobRequestValidator();
 
             // Act
             var result = validator.Validate(job);

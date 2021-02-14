@@ -13,7 +13,7 @@ namespace EventManager.WebAPI.Model
         private readonly ILogger<Repository> logger;
         
         // Dictionary does not use O(n) but implements a hashing algorithm to find data.
-        private static IDictionary<int, EventJob> EventJobs { get; } = new Dictionary<int, EventJob>();
+        private static IDictionary<int, Job> Jobs { get; } = new Dictionary<int, Job>();
         private readonly object readLock = new object();
 
         public Repository(ILogger<Repository> logger)
@@ -21,7 +21,7 @@ namespace EventManager.WebAPI.Model
             this.logger = logger;
         }
 
-        public int Upsert(EventJob job)
+        public int Upsert(Job job)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace EventManager.WebAPI.Model
                     {
                         job.Id = GetJobs().Any() ? GetJobs().Max(x => x.Id) + 1 : 1;
                         job.TimeStamp = DateTime.UtcNow;
-                        EventJobs.Add(job.Id, job);                
+                        Jobs.Add(job.Id, job);                
                     }
 
                     return job.Id;
@@ -54,19 +54,19 @@ namespace EventManager.WebAPI.Model
             }
         }
 
-        public IEnumerable<EventJob> GetJobs()
+        public IEnumerable<Job> GetJobs()
         {
-            return EventJobs.Values;
+            return Jobs.Values;
         }
 
-        public EventJob GetJob(int id)
+        public Job GetJob(int id)
         {
-            return EventJobs.TryGetValue(id, out var job) ? job : null;
+            return Jobs.TryGetValue(id, out var job) ? job : null;
         }
 
         public void DeleteJob(int id)
         {
-            EventJobs.Remove(id);
+            Jobs.Remove(id);
         }
     }
 }

@@ -3,7 +3,7 @@ namespace EventManager.WebAPI.Model
     /// <summary>
     /// Represents a request for a job.
     /// </summary>
-    public class EventJobRequest
+    public class JobRequest
     {
         /// <summary>
         /// Gets or sets the name of the job.

@@ -4,13 +4,13 @@ using Xunit;
 
 namespace Munro.UnitTests.Functional_Tests
 {
-    public class EventJobTest
+    public class JobTest
     {
         [Theory, MemberData(nameof(TestData))]
         public void can_create_eventjob(int id, string name, string user, string status, int[] data)
         {
             // Act
-            var job = new EventJob
+            var job = new Job
             {
                 Id = id,
                 Name = name,

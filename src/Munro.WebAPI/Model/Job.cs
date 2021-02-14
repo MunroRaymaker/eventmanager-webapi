@@ -5,7 +5,7 @@ namespace EventManager.WebAPI.Model
     /// <summary>
     /// Represents a job which holds data to be processed.
     /// </summary>
-    public class EventJob
+    public class Job
     {
         /// <summary>
         /// Gets or sets the unique id. Uses integers for easy reference.
