@@ -1,4 +1,7 @@
+using System;
+using EventManager.WebAPI.Model;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
@@ -16,6 +19,8 @@ namespace EventManager.WebAPI
             {
                 logger.Debug("Initialized Main");
                 var host = CreateHostBuilder(args).Build();
+                
+                //Seed(host);
 
                 host.Run();
             }
@@ -51,6 +56,23 @@ namespace EventManager.WebAPI
                 {
                     // If you need to register the service early in the pipeline to allow for service startup, do it here.
                 });
+        }
+
+        private static void Seed(IHost host)
+        {
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+
+            try
+            {
+                var context = services.GetRequiredService<JobContext>();
+                DbInitializer.Initialize(context);
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occurred creating the DB.");
+            }
         }
     }
 }

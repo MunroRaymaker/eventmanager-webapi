@@ -30,13 +30,14 @@ namespace EventManager.WebAPI
         {
             services.AddDbContext<JobContext>(opt => opt.UseInMemoryDatabase("JobList"));
             services.AddControllers();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "EventManager WebAPI", Version = "v1" });
             });
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<JobRequest>, JobRequestValidator>();
-            services.AddSingleton<IRepository, Repository>();
+           
             services.AddSingleton<IWorker, Worker>();
             services.AddHostedService<QueuedWorkerService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
