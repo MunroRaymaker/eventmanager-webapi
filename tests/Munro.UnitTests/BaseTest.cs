@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using EventManager.WebAPI.Mapping;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Munro.UnitTests
 {
@@ -7,7 +9,6 @@ namespace Munro.UnitTests
     {
         protected IMapper Mapper;
         protected IConfigurationProvider Configuration;
-
 
         public BaseTest()
         {

@@ -18,6 +18,14 @@ namespace EventManager.WebAPI.Services
         /// </summary>
         /// <param name="id">The id of the job to work on.</param>
         Task DoWork(long id);
+
+        /// <summary>
+        /// Sorts an array. Default is ascending order.
+        /// </summary>
+        /// <param name="data">The array of integers to be sorted</param>
+        /// <param name="sortOrder">The sorting order.</param>
+        /// <returns>A sorted array of integers.</returns>
+        int[] DoWork(IEnumerable<int> data, SortOrder sortOrder = SortOrder.Ascending);
     }
 
     public class Worker : IWorker
@@ -31,13 +39,13 @@ namespace EventManager.WebAPI.Services
 
         public async Task DoWork(long id)
         {
-            this.logger.LogInformation("Queued background task with id {Id} started ", job.Id);
+            this.logger.LogInformation("Queued background task with id {Id} started ", id);
 
             using (var ctx = new JobContext())
             {
                 // get work item from storage
                 var jobItem = await ctx.JobItems.FindAsync(id);
-                if (jobItem == null) throw new ArgumentException($"Item not found with id '{job.Id}'");
+                if (jobItem == null) throw new ArgumentException($"Item not found with id '{id}'");
 
                 try
                 {
@@ -74,14 +82,8 @@ namespace EventManager.WebAPI.Services
                 }
             }
         }
-
-        /// <summary>
-        /// Sorts an array. Default is ascending order.
-        /// </summary>
-        /// <param name="data">The array of integers to be sorted</param>
-        /// <param name="sortOrder">The sorting order.</param>
-        /// <returns>A sorted array of integers.</returns>
-        private int[] DoWork(IEnumerable<int> data, SortOrder sortOrder = SortOrder.Ascending)
+        
+        public int[] DoWork(IEnumerable<int> data, SortOrder sortOrder = SortOrder.Ascending)
         {
             var array = data as int[] ?? Array.Empty<int>();
 

@@ -27,14 +27,16 @@ namespace Munro.UnitTests
         public async Task when_getting_all_jobs_should_return_jobs()
         {
             // Arrange
-            var logger = Mock.Of<ILogger<JobsController>>();
+            var jobLogger = Mock.Of<ILogger<JobsController>>();
+            var workLogger = Mock.Of<ILogger<Worker>>();
+
             var btq = Mock.Of<IBackgroundTaskQueue>();
-            var worker = new Worker();
+            var worker = new Worker(workLogger);
 
             // Use a clean context to run tests
             await using (var context = new JobContext(ContextOptions))
             {
-                var controller = new JobsController(logger, btq, this.Mapper, worker, context);
+                var controller = new JobsController(jobLogger, btq, this.Mapper, worker, context);
 
                 // Act
                 var response = await controller.Get();
@@ -51,8 +53,10 @@ namespace Munro.UnitTests
         {
             // Arrange
             var logger = Mock.Of<ILogger<JobsController>>();
+            var workLogger = Mock.Of<ILogger<Worker>>();
+
             var btq = Mock.Of<IBackgroundTaskQueue>();
-            var worker = new Worker();
+            var worker = new Worker(workLogger);
 
             // Use a clean context to run tests
             await using (var context = new JobContext(ContextOptions))
@@ -74,8 +78,10 @@ namespace Munro.UnitTests
         {
             // Arrange
             var logger = Mock.Of<ILogger<JobsController>>();
+            var workLogger = Mock.Of<ILogger<Worker>>();
+
             var btq = Mock.Of<IBackgroundTaskQueue>();
-            var worker = new Worker();
+            var worker = new Worker(workLogger);
 
             // Use a clean context to run tests
             await using (var context = new JobContext(ContextOptions))
