@@ -78,7 +78,6 @@ namespace Munro.UnitTests
             var worker = new Worker();
 
             // Use a clean context to run tests
-            await using (var transaction = new JobContext(ContextOptions).Database.CurrentTransaction)
             await using (var context = new JobContext(ContextOptions))
             {
                 var controller = new JobsController(logger, btq, this.Mapper, worker, context);
@@ -90,13 +89,11 @@ namespace Munro.UnitTests
                     Name = "foo",
                     UserName = "bar"
                 });
-
+                
                 // Assert
                 response.Result.Should().BeOfType<CreatedAtActionResult>();
                 var result = response.Result as CreatedAtActionResult;
                 result.StatusCode.Should().Be(StatusCodes.Status201Created);
-
-                await transaction.RollbackAsync();
             }
         }
     }

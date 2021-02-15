@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using EventManager.WebAPI.Model;
+﻿using EventManager.WebAPI.Model;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 
 namespace Munro.UnitTests
 {
@@ -19,6 +19,8 @@ namespace Munro.UnitTests
         {
             using (var ctx = new JobContext(ContextOptions))
             {
+                ctx.Database.EnsureDeleted();
+                ctx.Database.EnsureCreated();
                 ctx.JobItems.AddRange(TestData);
                 ctx.SaveChanges();
             }
