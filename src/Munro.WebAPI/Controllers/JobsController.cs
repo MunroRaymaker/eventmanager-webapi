@@ -86,48 +86,7 @@ namespace EventManager.WebAPI.Controllers
             
             this.taskQueue.QueueBackgroundWorkItem(async token =>
             {
-                this.logger.LogInformation("Queued background task with id {Id} started ", job.Id);
-
-                using (var ctx = new JobContext())
-                {
-                    // get work item from storage
-                    var jobItem = await ctx.JobItems.FindAsync(job.Id);
-                    if (jobItem == null) throw new ArgumentException($"Item not found with id '{job.Id}'");
-
-                    try
-                    {
-                        // sort data
-                        jobItem.Data = this.worker.DoWork(jobItem.Data);
-                        jobItem.Complete();
-                    }
-                    catch (Exception ex)
-                    {
-                        // What if DoWork fails? Mark as failed and refer to manual processing.
-                        this.logger.LogError("Queued background task with id {Id} failed with message {Message}", jobItem.Id,
-                            ex.Message);
-
-                        jobItem.Failed();
-                    }
-
-                    this.logger.LogInformation("Queued background task with id {Id} completed in {Duration} ticks", jobItem.Id,
-                        jobItem.Duration);
-                    
-                    //var state = ctx.Entry(jobItem).State;
-
-                    // save data
-                    try
-                    {
-                        await ctx.SaveChangesAsync(token);
-                    }
-                    catch (DbUpdateConcurrencyException) when (!ctx.JobItems.Any(e => e.Id == jobItem.Id))
-                    {
-                        throw new ArgumentException("Not found");
-                    }
-                    catch (Exception ex)
-                    {
-                        this.logger.LogError(ex, "Could not save. " + ex.Message);
-                    }
-                }
+                await this.worker.DoWork(job.Id);
             });
 
             return CreatedAtAction(nameof(Get), new {job.Id}, job);
